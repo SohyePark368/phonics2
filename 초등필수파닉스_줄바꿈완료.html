@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>초등 필수 파닉스 무작정 따라하기</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+
+<style>
+body {
+margin:0;
+font-family:'Jua',sans-serif;
+background:linear-gradient(to bottom,#ffe4ef,#fff8fb);
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+
+.container {
+width:90%;
+max-width:760px;
+background:white;
+padding:35px;
+border-radius:30px;
+box-shadow:0 10px 35px rgba(255,170,200,0.35);
+text-align:center;
+}
+
+h1 {
+color:#ff6ea9;
+font-size:3rem;
+}
+
+.subtitle {
+color:#d27d9d;
+margin-bottom:25px;
+}
+
+.word {
+font-size:4rem;
+color:#ff4d8f;
+margin:35px 0;
+min-height:80px;
+}
+
+button,select {
+font-family:'Jua',sans-serif;
+}
+
+button {
+background:#ff95bf;
+border:none;
+color:white;
+padding:15px 24px;
+font-size:1.15rem;
+border-radius:18px;
+cursor:pointer;
+margin:8px;
+}
+
+button:hover {
+background:#ff74aa;
+}
+
+button:disabled {
+background:#ffd1e0;
+cursor:not-allowed;
+}
+
+select {
+padding:12px 18px;
+border-radius:15px;
+border:2px solid #ffc5d9;
+font-size:1.1rem;
+}
+
+.status {
+min-height:32px;
+margin-top:10px;
+color:#ff74aa;
+font-size:1.2rem;
+}
+
+.stats {
+margin-top:30px;
+background:#fff0f7;
+padding:20px;
+border-radius:20px;
+overflow-x:auto;
+}
+
+table {
+width:100%;
+border-collapse:collapse;
+}
+
+th,td {
+padding:12px;
+border-bottom:1px solid #ffd7e6;
+}
+
+.correct {
+color:#2dbd73;
+font-size:1.5rem;
+}
+
+.wrong {
+color:#ff5d73;
+font-size:1.5rem;
+}
+
+.progress {
+margin-top:10px;
+color:#c97f9c;
+}
+
+.footer {
+margin-top:20px;
+color:#cc8da6;
+}
+
+@media(max-width:600px) {
+.word {
+font-size:2.8rem;
+}
+
+h1 {
+font-size:2.2rem;
+}
+
+button {
+padding:13px 18px;
+font-size:1rem;
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>초등 필수 파닉스<br>무작정 따라하기</h1>
+
+<div class="subtitle">🎀 영어 단어를 또박또박 읽어보세요 🎀</div>
+
+<select id="groupSelect">
+<option value="1">1 단계</option>
+<option value="2">2 단계</option>
+<option value="3">3 단계</option>
+<option value="4">4 단계</option>
+</select>
+
+<br><br>
+
+<button onclick="startTest()">시작하기</button>
+
+<div class="word" id="word">READY?</div>
+
+<button id="listenBtn" onclick="listenWord()">🎤 읽기</button>
+<button id="skipBtn" onclick="skipWord()">⏭️ 통과</button>
+<button id="pauseBtn" onclick="pauseTest()">⏸️ 일시멈춤</button>
+
+<div id="result"></div>
+<div class="status" id="listeningStatus"></div>
+<div class="progress" id="progress"></div>
+
+<div class="stats">
+
+<h2>📚 단계별 결과</h2>
+
+<table>
+<thead>
+<tr>
+<th>단계</th>
+<th>성공</th>
+<th>전체</th>
+<th>정답률</th>
+<th>소요시간</th>
+</tr>
+</thead>
+
+<tbody id="statsTable"></tbody>
+
+</table>
+
+</div>
+
+<div class="footer">
+⭐ Chrome 또는 Edge 브라우저를 추천해요 ⭐
+</div>
+
+</div>
+
+<script>
+
+const groups = {"1": ["ankle", "insect", "red", "ant", "jam", "robot", "apple", "jelly", "salt", "arrow", "juice", "sand", "bag", "jump", "soup", "ball", "kangaroo", "sun", "bear", "kick", "tent", "book", "king", "tiger", "can", "kitchen", "top", "car", "lamp", "toy", "cat", "leg", "umbrella", "cup", "lemon", "uncle", "desk", "lion", "under", "dog", "map", "up", "doll", "milk", "van", "duck", "monkey", "vase", "egg", "mouse", "vest", "elbow", "name", "violin", "elephant", "nest", "watch", "exit", "nine", "water", "fan", "nose", "web", "fish", "octopus", "window", "fork", "olive", "box", "four", "ostrich", "fox", "game", "otter", "ox", "gift", "pan", "six", "girl", "party", "yacht", "gold", "pig", "yawn", "ham", "pizza", "yellow", "hand", "queen", "you", "hat", "question", "zebra", "hen", "quiet", "zero", "igloo", "quilt", "zipper", "indian", "rabbit", "zoo", "ink", "rain"], "2": ["dad", "hit", "cake", "rope", "bag", "six", "lake", "note", "jam", "big", "game", "hope", "can", "mix", "name", "joke", "cap", "sit", "cane", "pole", "map", "win", "tape", "zone", "bat", "job", "gate", "tube", "cat", "jog", "cave", "dune", "fat", "mop", "bake", "june", "hat", "top", "hate", "tune", "man", "hot", "safe", "cube", "sad", "pot", "wake", "mule", "web", "box", "hide", "cute", "bed", "fox", "ride", "mute", "red", "dot", "bike", "rude", "leg", "mom", "time", "rule", "pen", "not", "line", "fuse", "ten", "pop", "nine", "muse", "jet", "mud", "kite", "net", "bug", "five", "get", "hug", "bite", "let", "gum", "hike", "pet", "sun", "hive", "wet", "cup", "like", "kid", "bus", "robe", "lid", "cut", "hole", "pig", "fun", "dome", "wig", "mug", "home", "pin", "nut", "bone", "lip", "run", "cone"], "3": ["cake", "black", "song", "lake", "clap", "wind", "game", "clock", "want", "name", "flag", "sink", "cane", "glass", "long", "tape", "plate", "sing", "gate", "slide", "wrong", "cave", "block", "cheese", "bake", "cloud", "cherry", "hate", "flower", "phone", "safe", "glove", "shark", "wake", "plan", "ship", "hide", "sleep", "thumb", "ride", "brush", "wheel", "bike", "crab", "chair", "time", "drum", "photo", "line", "frog", "shirt", "nine", "grass", "thief", "kite", "prince", "think", "five", "truck", "white", "bite", "bread", "hike", "cry", "hive", "draw", "like", "drink", "robe", "fruit", "hole", "grow", "dome", "present", "home", "tree", "bone", "scarf", "cone", "skate", "rope", "smile", "note", "snow", "hope", "spoon", "joke", "squid", "pole", "star", "zone", "swim", "tube", "score", "dune", "skirt", "june", "small", "tune", "snail", "cube", "space", "mule", "square", "cute", "stop", "mute", "sweet", "rude", "hand", "rule", "tent", "fuse", "bank", "muse", "pink", "king", "ring"], "4": ["mail", "goal", "rain", "goat", "tuesday", "tail", "road", "value", "train", "toad", "car", "pay", "grow", "jar", "say", "glow", "star", "way", "window", "fork", "brain", "yellow", "horse", "nail", "house", "north", "sail", "mouse", "port", "wait", "mouth", "dark", "day", "sound", "farm", "gray", "brown", "park", "play", "cow", "start", "stay", "down", "corn", "bee", "cloud", "horn", "green", "loud", "pork", "seed", "shout", "short", "tree", "south", "clerk", "leaf", "crowd", "herd", "meat", "crown", "bird", "sea", "now", "girl", "feet", "town", "skirt", "meet", "boil", "curl", "see", "coin", "hurt", "week", "soil", "perm", "beach", "spoil", "person", "heat", "boy", "first", "jeans", "joy", "shirt", "read", "toy", "third", "pie", "join", "bur", "tie", "noise", "nurse", "field", "toilet", "turn", "piece", "voice", "book", "thief", "annoy", "cook", "ceiling", "cowboy", "foot", "receive", "enjoy", "wool", "die", "joyful", "food", "lie", "fruit", "wood", "chief", "juice", "moon", "niece", "suit", "roof", "protein", "blue", "cookie", "receipt", "clue", "good", "boat", "due", "look", "coat", "glue", "soap", "bruise", "pool", "blow", "cruise", "room", "bowl", "continue", "tooth", "crow", "issue", "zoo", "snow", "statue"]};
+
+let currentGroup = "";
+let words = [];
+let remainingWords = [];
+let currentWord = "";
+let correctCount = 0;
+let startTime = null;
+let elapsedBeforePause = 0;
+let pauseStartedAt = null;
+let paused = false;
+let recognition = null;
+
+function shuffle(array) {
+for (let i = array.length - 1; i > 0; i--) {
+const j = Math.floor(Math.random() * (i + 1));
+[array[i], array[j]] = [array[j], array[i]];
+}
+}
+
+function formatTime(seconds) {
+const min = Math.floor(seconds / 60);
+const sec = seconds % 60;
+return `${min}분 ${sec}초`;
+}
+
+function getElapsedSeconds() {
+if (!startTime) return 0;
+let elapsed = Math.floor((Date.now() - startTime - elapsedBeforePause) / 1000);
+if (paused && pauseStartedAt) {
+elapsed = Math.floor((pauseStartedAt - startTime - elapsedBeforePause) / 1000);
+}
+return Math.max(0, elapsed);
+}
+
+function startTest() {
+currentGroup = document.getElementById("groupSelect").value;
+words = [...groups[currentGroup]];
+remainingWords = [...words];
+shuffle(remainingWords);
+correctCount = 0;
+startTime = Date.now();
+elapsedBeforePause = 0;
+pauseStartedAt = null;
+paused = false;
+document.getElementById("pauseBtn").innerText = "⏸️ 일시멈춤";
+document.getElementById("result").innerHTML = "";
+document.getElementById("listeningStatus").innerText = "";
+nextWord();
+updateStats();
+}
+
+function nextWord() {
+if (paused) return;
+
+if (remainingWords.length === 0) {
+document.getElementById("word").innerText = "🎉 완료!";
+document.getElementById("result").innerHTML = "";
+document.getElementById("listeningStatus").innerText = "";
+document.getElementById("progress").innerText = "";
+saveStats();
+updateStats();
+return;
+}
+
+currentWord = remainingWords.pop();
+document.getElementById("word").innerText = currentWord;
+document.getElementById("result").innerHTML = "";
+document.getElementById("listeningStatus").innerText = "";
+
+const done = words.length - remainingWords.length;
+
+document.getElementById("progress").innerText =
+`진행률: ${done} / ${words.length}`;
+}
+
+function listenWord() {
+if (!currentWord || currentWord === "🎉 완료!" || paused) return;
+
+const SpeechRecognition =
+window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (!SpeechRecognition) {
+alert("이 브라우저에서는 음성 인식을 지원하지 않아요.");
+return;
+}
+
+recognition = new SpeechRecognition();
+recognition.lang = "en-US";
+
+document.getElementById("listeningStatus").innerText = "🎧 듣고 있어요...";
+recognition.start();
+
+recognition.onresult = function(event) {
+document.getElementById("listeningStatus").innerText = "";
+
+const spoken = event.results[0][0].transcript
+.trim()
+.toLowerCase();
+
+const target = currentWord.toLowerCase();
+
+if (spoken.includes(target) || target.includes(spoken)) {
+correctCount++;
+
+document.getElementById("result").innerHTML =
+`<div class="correct">✅ 잘 읽었어요! (${spoken})</div>`;
+
+} else {
+document.getElementById("result").innerHTML =
+`<div class="wrong">❌ 다시 읽어볼까요? (${spoken})</div>`;
+}
+
+saveStats();
+updateStats();
+
+setTimeout(nextWord, 1500);
+};
+
+recognition.onerror = function() {
+document.getElementById("listeningStatus").innerText = "";
+document.getElementById("result").innerHTML =
+`<div class="wrong">🎤 마이크를 다시 확인해주세요!</div>`;
+};
+}
+
+function skipWord() {
+if (!currentWord || currentWord === "🎉 완료!" || paused) return;
+
+document.getElementById("listeningStatus").innerText = "";
+document.getElementById("result").innerHTML =
+`<div class="wrong">⏭️ 통과했어요. 다음 단어로 갈게요!</div>`;
+
+saveStats();
+updateStats();
+
+setTimeout(nextWord, 800);
+}
+
+function pauseTest() {
+if (!startTime) return;
+
+paused = !paused;
+
+if (paused) {
+pauseStartedAt = Date.now();
+document.getElementById("pauseBtn").innerText = "▶️ 계속하기";
+document.getElementById("listeningStatus").innerText = "";
+document.getElementById("result").innerHTML =
+`<div class="wrong">⏸️ 잠시 멈췄어요</div>`;
+
+if (recognition) {
+try { recognition.stop(); } catch(e) {}
+}
+} else {
+if (pauseStartedAt) {
+elapsedBeforePause += Date.now() - pauseStartedAt;
+}
+pauseStartedAt = null;
+document.getElementById("pauseBtn").innerText = "⏸️ 일시멈춤";
+document.getElementById("result").innerHTML =
+`<div class="correct">▶️ 다시 시작해요!</div>`;
+}
+}
+
+function saveStats() {
+if (!currentGroup || words.length === 0) return;
+
+const total = words.length;
+const percent = Math.round((correctCount / total) * 100);
+const elapsed = getElapsedSeconds();
+
+localStorage.setItem(
+"phonics_" + currentGroup,
+JSON.stringify({
+correct: correctCount,
+total: total,
+percent: percent,
+elapsed: elapsed
+})
+);
+}
+
+function updateStats() {
+const table = document.getElementById("statsTable");
+table.innerHTML = "";
+
+for (const group in groups) {
+const data = JSON.parse(localStorage.getItem("phonics_" + group));
+
+let correct = 0;
+let total = groups[group].length;
+let percent = 0;
+let elapsed = 0;
+
+if (data) {
+correct = data.correct || 0;
+percent = data.percent || 0;
+elapsed = data.elapsed || 0;
+}
+
+table.innerHTML += `
+<tr>
+<td>${group} 단계</td>
+<td>${correct}</td>
+<td>${total}</td>
+<td>${percent}%</td>
+<td>${formatTime(elapsed)}</td>
+</tr>
+`;
+}
+}
+
+updateStats();
+
+</script>
+
+</body>
+</html>
